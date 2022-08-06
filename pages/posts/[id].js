@@ -12,13 +12,15 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async ({ params }) => {
-  const postData = getPostData(params.id);
+  // getPostDataをasyncにしたので、結果をawaitで待つように変更
+  const postData = await getPostData(params.id);
   return {
     props: {
       postData,
     },
   };
 };
+
 const Post = ({ postData }) => {
   return (
     <Layout>
@@ -27,6 +29,10 @@ const Post = ({ postData }) => {
       {postData.id}
       <br />
       {postData.date}
+      <br />
+      {/* dangerouslySetInnerHTMLを使用してcontentHtmlをレンダリング => Reactから安全にHTMLを生成 */}
+      {/* dangerouslyと付いているのは、コードからHTMLを生成するのはXSSの脆弱性を生む危険があることを認識させるため */}
+      <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
     </Layout>
   );
 };
